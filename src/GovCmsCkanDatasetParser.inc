@@ -201,7 +201,8 @@ class GovCmsCkanDatasetParser {
       // Add the rows and header based on the formatter required.
       $tables[$group_key] = call_user_func(array($this, $parse_callback), $records);
 
-      // Add any additional attributes.
+      // Add any additional attributes and a generic class.
+      $this->tableAttributes['class'][] = 'govcms-ckan-table';
       $tables[$group_key]['attributes'] = $this->tableAttributes;
     }
 
