@@ -215,3 +215,40 @@ function govcms_ckan_display_parse_column_overrides($column_overrides = array())
   }
   return $settings;
 }
+
+/**
+ * Implements hook_entity_view().
+ *
+ * A fix for js not being loaded when a file is embeded using wysiwyg.
+ */
+function govcms_ckan_display_entity_view($entity, $type, $view_mode, $langcode) {
+  // This is only required when embeding via media wysiwyg (as far as we know).
+  $wysiwyg_allowed = variable_get('media_wysiwyg_wysiwyg_allowed_types', array());
+  if (!in_array('ckan', $wysiwyg_allowed)) {
+    return;
+  }
+
+  // Find files being used by this entity.
+  list($id, $vid, $bundle) = entity_extract_ids($type, $entity);
+
+  // Potentially could be called many times for a single page so use some static
+  // caching to prevent unnecessary db hits.
+  $result = &drupal_static(__FUNCTION__ . current_path(), NULL);
+
+  // Check if there is any ckan files used on this page.
+  if (is_null($result)) {
+    $query = db_select('file_usage', 'f');
+    $query->join('file_managed', 'm', 'f.fid = m.fid AND m.filemime = :type', array(':type' => 'other/ckan'));
+
+    $result = $query
+      ->fields('f', array('fid'))
+      ->condition('f.type', $type)
+      ->condition('f.id', $id)
+      ->execute();
+  }
+
+  // If a ckan file is used, attach libs.
+  if (count($result)) {
+    govcms_ckan_display_add_charts('.ckan-chart');
+  }
+}
