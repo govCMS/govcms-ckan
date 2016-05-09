@@ -48,7 +48,7 @@
       height: '',
       // Include c3js styles (fixes display bugs with c3js charts)
       includeC3jsStyles: true,
-      c3jsStyles: 'svg{font:10px sans-serif}line,path{fill:none;stroke:#000}',
+      c3jsStyles: 'svg{font:10px sans-serif}line,path{fill:none;stroke:#000}.c3-bar{stroke:none!important}',
       // Passed Validation requirements.
       valid: true,
       // Error message.

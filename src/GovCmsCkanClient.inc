@@ -5,7 +5,7 @@
  *
  * Basic Example Usage.
  * --------------------
- * $client = new GovCmsCkanClient($base_url, $api_key);
+ * $client = new GovCmsCkanClient($base_url, $api_key, $auth_header);
  * $client->get('action/package_show', array('id' => 'fd49dc83f86f'));
  *
  * Response Object.
@@ -31,6 +31,7 @@ class GovCmsCkanClient {
    */
   private $apiUrl;
   private $apiKey;
+  private $authHeader;
   private $apiPath = '/api/%d/';
   private $apiVersion = 3;
 
@@ -79,9 +80,10 @@ class GovCmsCkanClient {
    * @param int $api_version
    *   The version of the API to use.
    */
-  public function __construct($base_url, $api_key = NULL, $api_version = 3) {
+  public function __construct($base_url, $api_key = NULL, $auth_header = "Authorization", $api_version = 3) {
     $this->apiUrl = $base_url;
     $this->apiKey = $api_key;
+    $this->authHeader = $auth_header;
     $this->apiVersion = $api_version;
   }
 
@@ -108,7 +110,7 @@ class GovCmsCkanClient {
     // Add authentication.
     $options = array();
     if (!empty($this->apiKey)) {
-      $options = array('headers' => array('Authorization' => $this->apiKey));
+      $options = array('headers' => array($this->authHeader => $this->apiKey));
     }
 
     // Return TRUE if response code is 200 (OK).
@@ -155,7 +157,7 @@ class GovCmsCkanClient {
     if ($this->cacheDataGet() === FALSE) {
       // Make the request.
       $this->response = drupal_http_request($this->url, array(
-        'headers' => array('Authorization' => $this->apiKey),
+        'headers' => array($this->authHeader => $this->apiKey),
       ));
 
       // Parse the response.

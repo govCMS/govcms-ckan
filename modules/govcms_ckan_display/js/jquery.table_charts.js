@@ -23,6 +23,8 @@
    * -- data-defaultView: Should the chart or table be displayed first. Defaults to 'chart'.
    * -- data-palette: A comma separated list of hex colours to be used for the palette.
    * -- data-grid: Grid lines to use: xy, x or y
+   * -- data-showTitle : Should a title be rendered within the chart
+   * -- data-title : The title string
    * -- data-xLabel: The optional label to show on the X axis
    * -- data-yLabel: The optional label to show on the Y axis
    * -- data-xTickRotate: The angle to rotate X axis labels
@@ -36,6 +38,7 @@
    * - Table headings (th) is used as the label and the following attributes can be used
    * -- data-color: Hex colour, alternative to using palette on the table element.
    * -- data-style: The style for the line (dashed, solid)
+   * -- data-type: Override the chart type for a specific column of data.
    * - Each column forms a data set, Table headings can be strings but table values must be Ints.
    * -- If a tbody row has a th (scope=row), this will be used to form the x axis tick labels.
    * -- To ignore a thead th (eg placeholder for a label col) use the data-placeholder=true attr.
@@ -86,14 +89,19 @@
       chartDomId: 'table-chart-0',
       // The type of chart.
       type: 'line',
+      // Type override with the key/type.
+      types: {},
       // The tableChartChart class used to create the chart.
       chart: 'c3js',
       // Chart settings.
       rotated: false,
       palette: [],
+      paletteOverride: {},
       labels: false,
       styles: [],
       grid: null,
+      showTitle: false,
+      title: null,
       xLabel: null,
       yLabel: null,
       xTickRotate: 0,
@@ -115,7 +123,7 @@
       // Data attributes automatically parsed from the table element.
       dataAttributes: ['type', 'rotated', 'labels', 'defaultView', 'grid', 'xLabel', 'yLabel', 'xTickRotate',
         'xTickCount', 'yTickCount', 'xTickCull', 'yTickCull', 'stacked', 'exportWidth', 'exportHeight',
-        'barWidth', 'yRound'],
+        'barWidth', 'yRound', 'showTitle', 'title'],
       // Chart views determine what is displaying chart vs table.
       chartViewName: 'chart',
       tableViewName: 'table',
@@ -148,7 +156,7 @@
       // Available settings are found in the dataAttributes setting. We loop through
       // each of those and if not empty, override the settings.
       $(self.settings.dataAttributes).each(function (i, attr) {
-        val = self.settings.$dom.data(attr);
+        val = self.settings.$dom.data(attr.toLowerCase());
         if (val !== undefined && val !== null && val !== '') {
           self.settings[attr] = val;
         }
@@ -175,22 +183,30 @@
      *   The value for this cell.
      */
     self.parseTableHeading = function ($cell, col) {
-      // Override colour for this data set.
+      // The content of the TH forms the value/key.
+      var value = $cell.html();
+
+      // Override colour for this data column.
       if ($cell.data('color') !== undefined) {
-        self.settings.palette[col] = $cell.data('color');
+        self.settings.paletteOverride[value] = $cell.data('color');
       }
 
       // Currently only style option is dashed and will only work with line.
       // @see http://c3js.org/samples/simple_regions.html
       if ($cell.data('style') !== undefined && $cell.data('style') === 'dashed') {
-        self.settings.styles.push({set: $cell.html(), style: $cell.data('style')});
+        self.settings.styles.push({set: value, style: $cell.data('style')});
+      }
+
+      // Allows a column/heading to define its graph type, overriding the default.
+      if ($cell.data('type') !== undefined) {
+        self.settings.types[value] = $cell.data('type');
       }
 
       // Create a group of headings (used for stacking).
-      self.settings.group.push($cell.html());
+      self.settings.group.push(value);
 
       // Return the value for this cell.
-      return $cell.html();
+      return value;
     };
 
     /*
@@ -457,6 +473,10 @@
     // Show labels on data points?
     settings.data.labels = settings.labels;
 
+    // Add any overrides to graph types based on the column.
+    settings.data.types = settings.types;
+    settings.data.colors = settings.paletteOverride;
+
     // Add the data columns.
     $(settings.columns).each(function (i, col) {
       settings.data.columns.push(col);
@@ -484,6 +504,11 @@
       case 'y':
         options.grid = {y: {show: true}};
         break;
+    }
+
+    // Add optional title.
+    if (settings.showTitle) {
+      options.title = {text: settings.title};
     }
 
     // Provide a width ratio for bars.

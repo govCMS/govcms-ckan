@@ -65,9 +65,20 @@ class GovCmsCkanDatasetParser {
   private $tableAttributes = array();
 
   /**
-   * GovCmsCkanDatasetParser constructor.
+   * Attributes for a specific column.
    */
-  public function __construct() {
+  private $columnAttributes = array();
+
+  /**
+   * GovCmsCkanDatasetParser constructor.
+   *
+   * @param object $result
+   *   Instantiate with result set, this can also be done later with setResult.
+   */
+  public function __construct($result = NULL) {
+    if (!empty($result)) {
+      $this->setResult($result);
+    }
   }
 
   /**
@@ -131,6 +142,7 @@ class GovCmsCkanDatasetParser {
   public function setResult($result) {
     $this->result = $result;
     $this->records = $result->records;
+    $this->cleanseKeys();
     return $this;
   }
 
@@ -171,9 +183,59 @@ class GovCmsCkanDatasetParser {
    * @return $this
    *   Return self for chaining.
    */
-  public function setTableAttributes($attributes) {
+  public function setTableAttributes($attributes = array()) {
     $this->tableAttributes = array_merge($this->tableAttributes, $attributes);
     return $this;
+  }
+
+  /**
+   * Adds attributes to the column headers.
+   *
+   * @param array $column_attributes
+   *   An array keyed by the column/td value with its value being an array of
+   *   attributes to be added to that td.
+   *
+   * @return $this
+   *   Return self for chaining.
+   */
+  public function setColumnAttributes($column_attributes = array()) {
+    $this->columnAttributes = $column_attributes;
+    return $this;
+  }
+
+  /**
+   * Normalises attributes so all keys are lowercase.
+   *
+   * @return array
+   *   An array of attributes.
+   */
+  public function normaliseAttributes($attributes) {
+    $attrs = array();
+    foreach ($attributes as $key => $value) {
+      $attrs[strtolower($key)] = $value;
+    }
+    return $attrs;
+  }
+
+  /**
+   * Return the unique labels for a given key.
+   *
+   * @param string $key
+   *   The key to filter by.
+   *
+   * @return array
+   *   An array of keys
+   */
+  public function getUniqueLabels($key = NULL) {
+    $labels = array();
+    if (!empty($this->records) && is_array($this->records) && !empty($key)) {
+      foreach ($this->records as $record) {
+        if (isset($record->{$key})) {
+          $labels[$record->{$key}] = $record->{$key};
+        }
+      }
+    }
+    return $labels;
   }
 
   /**
@@ -203,7 +265,7 @@ class GovCmsCkanDatasetParser {
 
       // Add any additional attributes and a generic class.
       $this->tableAttributes['class'][] = 'govcms-ckan-table';
-      $tables[$group_key]['attributes'] = $this->tableAttributes;
+      $tables[$group_key]['attributes'] = $this->normaliseAttributes($this->tableAttributes);
     }
 
     // Format for renderable array if required.
@@ -275,7 +337,37 @@ class GovCmsCkanDatasetParser {
     if (empty($value) && $scope == 'col') {
       $cell['data-placeholder'] = 'true';
     }
+    elseif ($scope == 'col' && !empty($this->columnAttributes[$value])) {
+      // Add any additional column attributes.
+      $cell = array_merge($cell, $this->normaliseAttributes($this->columnAttributes[$value]));
+    }
     return $cell;
+  }
+
+  /**
+   * A helper to cleanse a value by removing new lines.
+   *
+   * @param string $value
+   *   The value to cleanse.
+   *
+   * @return string
+   *   The cleansed value.
+   */
+  public function cleanseValue($value = NULL) {
+    return str_replace(array("\r\n", "\n", "\r"), ' ', $value);
+  }
+
+  /**
+   * A helper to cleanse all keys in the record set.
+   */
+  public function cleanseKeys() {
+    foreach ($this->records as $i => $record) {
+      $clean_record = array();
+      foreach ((array) $record as $key => $value) {
+        $clean_record[$this->cleanseValue($key)] = $value;
+      }
+      $this->records[$i] = (object) $clean_record;
+    }
   }
 
   /**
@@ -316,7 +408,7 @@ class GovCmsCkanDatasetParser {
 
     // Add keys as header.
     foreach ($keys as $key) {
-      $table['header'][] = $this->labelKey == $key ? $this->createHeaderCell('col') : $key;
+      $table['header'][] = $this->labelKey == $key ? $this->createHeaderCell('col') : $this->createHeaderCell('col', $key);
     }
 
     // For each record.
@@ -326,7 +418,7 @@ class GovCmsCkanDatasetParser {
       foreach ($keys as $key) {
         // If label key is disabled ignore the 'none' key and continue.
         if (empty($key)) {
-	  $row[] = NULL;
+          $row[] = NULL;
           continue;
         }
 
@@ -359,7 +451,7 @@ class GovCmsCkanDatasetParser {
       $data_col_num = $col_num + 1;
 
       // Append labelKey value to header.
-      $table['header'][] = $record->{$this->labelKey};
+      $table['header'][] = $this->createHeaderCell('col', $record->{$this->labelKey});
 
       // Make the rows from the keys.
       foreach ($this->keys as $row_num => $key) {

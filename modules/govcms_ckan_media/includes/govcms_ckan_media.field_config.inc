@@ -266,9 +266,14 @@ function govcms_ckan_media_visualisation_default_key_config($form, $form_state, 
     return $form;
   }
 
+  // Get an instance of the parser.
+  $parser = govcms_ckan_dataset_parser($result->data);
+
   // Loop over fields to build some lists for options.
   $options = array();
   foreach ($result->data->fields as $field) {
+    // Cleanse the value (stripping new lines).
+    $field->id = $parser->cleanseValue($field->id);
     // Ignore the ID field.
     if ($field->id == '_id') {
       continue;
@@ -328,6 +333,8 @@ function govcms_ckan_media_visualisation_default_key_config($form, $form_state, 
     '#description' => t('What data to display in the visualisation.'),
   );
 
+  $col_override_id = 'col-override-settings';
+  $x_axis_grouping = isset($config['x_axis_grouping']) ? $config['x_axis_grouping'] : 'keys';
   $form['x_axis_grouping'] = array(
     '#type' => 'select',
     '#title' => t('X Axis Grouping'),
@@ -335,8 +342,12 @@ function govcms_ckan_media_visualisation_default_key_config($form, $form_state, 
       'keys' => t('Group by keys'),
       'values' => t('Group by label values'),
     ),
-    '#default_value' => isset($config['x_axis_grouping']) ? $config['x_axis_grouping'] : 'keys',
+    '#default_value' => $x_axis_grouping,
     '#description' => t('Will the x axis be keys or values of the label key.'),
+    '#ajax' => array(
+      'callback' => 'govcms_ckan_media_visualisation_default_key_config_col_override_callback',
+      'wrapper' => $col_override_id,
+    ),
   );
 
   $form['labels'] = array(
@@ -345,6 +356,10 @@ function govcms_ckan_media_visualisation_default_key_config($form, $form_state, 
     '#options' => $options['all'],
     '#default_value' => $config['labels'],
     '#description' => t('What key contains the labels.'),
+    '#ajax' => array(
+      'callback' => 'govcms_ckan_media_visualisation_default_key_config_col_override_callback',
+      'wrapper' => $col_override_id,
+    ),
   );
 
   $form['split'] = array(
@@ -356,6 +371,27 @@ function govcms_ckan_media_visualisation_default_key_config($form, $form_state, 
     '#description' => t('Optionally spit into multiple visualisations based on the value of this key.'),
   );
 
+  $form['column_overrides'] = array(
+    '#prefix' => '<div id="' . $col_override_id . '">',
+    '#suffix' => '</div>',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#type' => 'fieldset',
+    '#title' => t('Column overrides'),
+    '#description' => t('Optionally override a style for a specific column, add one key|value per line and separate key value with a pipe.<br />Examples: <b>type|line</b> or <b>color|#000000</b> or <b>style|dashed</b>.'),
+  );
+
+  // Get the columns in use and make a text area for each to store its settings.
+  $columns = $x_axis_grouping == 'keys' ? $options['all'] : $parser->getUniqueLabels($config['labels']);
+  foreach ($columns as $column) {
+    $form['column_overrides'][$column] = array(
+      '#type' => 'textarea',
+      '#rows' => 2,
+      '#title' => filter_xss($column),
+      '#default_value' => isset($config['column_overrides'][$column]) ? $config['column_overrides'][$column] : NULL,
+    );
+  }
+
   // This indicates to future parsers that these elements have been included.
   $form['key_defaults'] = array(
     '#type' => 'hidden',
@@ -363,6 +399,17 @@ function govcms_ckan_media_visualisation_default_key_config($form, $form_state, 
   );
 
   return $form;
+}
+
+/**
+ * Ajax callback for changing the label key or x grouping.
+ */
+function govcms_ckan_media_visualisation_default_key_config_col_override_callback($form, &$form_state) {
+  $form_state['rebuild'] = TRUE;
+  $parents = $form_state['triggering_element']['#parents'];
+  array_pop($parents);
+  $el = drupal_array_get_nested_value($form, $parents);
+  return $el['column_overrides'];
 }
 
 /**
@@ -382,6 +429,13 @@ function govcms_ckan_media_visualisation_default_key_config($form, $form_state, 
  */
 function govcms_ckan_media_visualisation_default_axis_config($form, $form_state, $config = array()) {
   $element = array();
+
+  // Chart title.
+  $element['show_title'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Display chart title'),
+    '#default_value' => $config['show_title'],
+  );
 
   // Labels.
   $element['x_label'] = array(

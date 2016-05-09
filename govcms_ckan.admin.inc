@@ -34,6 +34,16 @@ function govcms_ckan_settings_form() {
     '#default_value' => variable_get('govcms_ckan_api_key', ''),
   );
 
+  $form['govcms_ckan_auth_header'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Authorisation header'),
+    '#description' => t('Optionally override the HTTP authorisation header if required.'),
+    '#weight' => 2,
+    '#size' => 100,
+    '#required' => FALSE,
+    '#default_value' => variable_get('govcms_ckan_auth_header', ''),
+  );
+
   $form['#validate'][] = 'govcms_ckan_settings_form_validate';
 
   return system_settings_form($form);
@@ -56,7 +66,8 @@ function govcms_ckan_settings_form_validate($form, &$form_state) {
   module_load_include('inc', 'govcms_ckan', 'src/GovCmsCkanClient');
   $client = new GovCmsCkanClient(
     $form_state['values']['govcms_ckan_endpoint_url'],
-    $form_state['values']['govcms_ckan_api_key']);
+    $form_state['values']['govcms_ckan_api_key'],
+    $form_state['values']['govcms_ckan_auth_header']);
 
   // Test the connection for a valid response.
   if (!empty($form_state['values']['govcms_ckan_api_key'])) {

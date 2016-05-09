@@ -31,14 +31,6 @@ function govcms_ckan_menu() {
     'access arguments' => array('administer govcms ckan'),
     'file' => 'govcms_ckan.admin.inc',
   );
-  // Temporary demo page, will be removed after integration complete.
-  $items['govcms-ckan/demo-page'] = array(
-    'title' => 'govCMS CKAN Demo Page',
-    'page callback' => 'govcms_ckan_demo_page',
-    'access arguments' => array('access content'),
-    'file' => 'govcms_ckan.demo.inc',
-    'type' => MENU_CALLBACK,
-  );
   return $items;
 }
 
@@ -52,27 +44,6 @@ function govcms_ckan_permission() {
       'description' => t('Allows the user to access the govCMS CKAN admin page.'),
     ),
   );
-}
-
-/**
- * Implements hook_form_BASE_FORM_ID_alter().
- */
-function govcms_ckan_form_node_type_form_alter(&$form, $form_state) {
-  if (isset($form['type'])) {
-    $form['ckan_graph'] = array(
-      '#title' => t('CKAN Graph'),
-      '#type' => 'fieldset',
-      '#collapsible' => TRUE,
-      '#group' => 'additional_settings',
-      '#weight' => -100,
-    );
-    $form['ckan_graph']['govcms_ckan_graph_node'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Enable govCMS CKAN graph functionality.'),
-      '#description' => t('Allows this content type to be displayed as a CKAN Graph.'),
-      '#default_value' => variable_get('govcms_ckan_graph_node_' . $form['#node_type']->type, FALSE),
-    );
-  }
 }
 
 /**
@@ -199,7 +170,8 @@ function govcms_ckan_client() {
   module_load_include('inc', 'govcms_ckan', 'src/GovCmsCkanClient');
   $base_url = variable_get('govcms_ckan_endpoint_url', '');
   $api_key = variable_get('govcms_ckan_api_key', '');
-  return new GovCmsCkanClient($base_url, $api_key);
+  $auth_header = variable_get('govcms_ckan_auth_header', 'Authorization');
+  return new GovCmsCkanClient($base_url, $api_key, $auth_header);
 }
 
 /**
@@ -242,8 +214,41 @@ function govcms_ckan_client_request_meta($resource_id = NULL) {
 
 /**
  * Helper to return a new instance of the CKAN DataSet parser.
+ *
+ * @param object $result
+ *   Instantiate with result set, this can also be done later with setResult.
+ *
+ * @return object
+ *   An instance of the ckan dataset parser.
  */
-function govcms_ckan_dataset_parser() {
+function govcms_ckan_dataset_parser($result = NULL) {
   module_load_include('inc', 'govcms_ckan', 'src/GovCmsCkanDatasetParser');
-  return new GovCmsCkanDatasetParser();
+  return new GovCmsCkanDatasetParser($result);
+}
+
+/**
+ * Turn a string of key value pairs separated by new lines and pipes into array.
+ *
+ * It is a shame drupal doesn't have a helper for this, the closest thing is
+ * list_extract_allowed_values() however it is very specific to the list module
+ * so this is a simplified version.
+ *
+ * @param string $string
+ *   The string input, generally user entered content int a textarea.
+ *
+ * @return array
+ *   A key value array, each new line in the string forms a new array item keyed
+ *   by the pipe prefix and value is the pipe suffix.
+ */
+function govcms_ckan_string_to_array($string) {
+  $values = array();
+  $list = explode("\n", $string);
+  $list = array_map('trim', $list);
+  foreach ($list as $row) {
+    if (!empty($row) && strpos($row, '|') !== FALSE) {
+      list($key, $value) = explode('|', $row, 2);
+      $values[filter_xss($key)] = filter_xss($value);
+    }
+  }
+  return $values;
 }
