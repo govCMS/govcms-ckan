@@ -11,6 +11,14 @@
 define('GOVCMS_CKAN_CONFIG_PATH', 'admin/config/services/govcms-ckan');
 
 /**
+ * Limit of records retrieved via the API. CKAN default is 100.
+ *
+ * TODO: Move this to a configuration (somewhere). For now, we really want all
+ * records as we don't have any way to 'request more' results from the api.
+ */
+define('GOVCMS_CKAN_DATASET_RECORD_LIMIT', 1000000);
+
+/**
  * Implements hook_ctools_plugin_directory().
  */
 function govcms_ckan_ctools_plugin_directory($module, $plugin) {
@@ -185,7 +193,7 @@ function govcms_ckan_client() {
  */
 function govcms_ckan_client_request_records($resource_id = NULL, $search = NULL, $filters = NULL) {
   $client = govcms_ckan_client();
-  $query = array('id' => $resource_id);
+  $query = array('id' => $resource_id, 'limit' => GOVCMS_CKAN_DATASET_RECORD_LIMIT);
 
   if (!empty($search)) {
     $query += array('q' => $search);
