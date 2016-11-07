@@ -177,10 +177,7 @@ function govcms_ckan_display_spline_chart_configure($plugin, $form, &$form_state
     '#description' => t('Define the opacity of the area. This does not affect the line.'),
     '#states' => array(
       'visible' => array(
-        // This field is deeply nested so resorting to a fairly ugly selector
-        // if selector is not found the in the edge case that the lang or delta
-        // is different field will fallback to being visible anyway.
-        ':input#edit-ckan-visualisation-und-0-config-visualisation-config-area' => array('checked' => TRUE),
+        govcms_ckan_media_get_element_selector(':input', 'area') => array('checked' => TRUE),
       ),
     ),
   );

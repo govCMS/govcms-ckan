@@ -192,7 +192,7 @@ function govcms_ckan_display_bar_chart_configure($plugin, $form, &$form_state, $
     '#description' => t('Manually set the width of the bars in the chart. Useful if setting X axis values and bar width is incorrect. Numeric whole numbers only or "auto" to use default.'),
     '#states' => array(
       'visible' => array(
-        'select#edit-ckan-visualisation-und-0-config-visualisation-config-bar-width' => array('value' => 'manual'),
+        govcms_ckan_media_get_element_selector('select', 'bar_width') => array('value' => 'manual'),
       ),
     ),
   );
@@ -216,7 +216,7 @@ function govcms_ckan_display_bar_chart_configure($plugin, $form, &$form_state, $
     '#default_value' => govcms_ckan_get_config_value($config, 'data_order'),
     '#states' => array(
       'visible' => array(
-        'input#edit-ckan-visualisation-und-0-config-visualisation-config-stacked' => array('checked' => TRUE),
+        govcms_ckan_media_get_element_selector('input', 'stacked') => array('checked' => TRUE),
       ),
     ),
   );

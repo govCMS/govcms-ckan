@@ -617,7 +617,7 @@ function govcms_ckan_media_visualisation_default_axis_config($form, &$form_state
     ),
     '#states' => array(
       'visible' => array(
-        'select#edit-ckan-visualisation-und-0-config-visualisation-config-axis-settings-x-type' => array('value' => 'timeseries'),
+        govcms_ckan_media_get_element_selector('select', 'axis_settings_x_type') => array('value' => 'timeseries'),
       ),
     ),
   );
@@ -959,4 +959,28 @@ function govcms_ckan_media_visualisation_default_chart_config($form, &$form_stat
  */
 function govcms_ckan_media_form_title_element($title) {
   return array('#type' => 'markup', '#markup' => '<h3 class="govcms-ckan-media--settings-title">' . $title . '</h3>');
+}
+
+/**
+ * A Helper to provide a selector for a config form element.
+ *
+ * This is used for drupal form state selectors. See drupal_process_states().
+ * We make some assumptions for language and delta.
+ *
+ * @param string $tag
+ *   The element tag name, eg. input or select.
+ * @param string $name
+ *   The name of the element.
+ * @param int $delta
+ *   The delta of the item, currently this is not able to be determined from
+ *   where this will be called. As there should only ever be one item, a delta
+ *   of 0 should be correct.
+ * @param string $lang
+ *   Like the delta, we default to LANGUAGE_NONE for the language.
+ *
+ * @return string
+ *   The selector of the element using the id.
+ */
+function govcms_ckan_media_get_element_selector($tag, $name, $delta = 0, $lang = LANGUAGE_NONE) {
+  return $tag . '#edit-ckan-visualisation-' . $lang . '-' . $delta . '-config-visualisation-config-' . drupal_html_class($name);
 }
