@@ -27,6 +27,7 @@
    * -- data-pointSize: Define the point size, default is 2.5
    * -- data-showTitle : Should a title be rendered within the chart
    * -- data-title : The title string
+   * -- data-dataOrder : Define the order of stacked datasets: desc, asc or null.
    * -- data-xLabel: The optional label to show on the X axis
    * -- data-yLabel: The optional label to show on the Y axis
    * -- data-xTickRotate: The angle to rotate X axis labels
@@ -117,6 +118,7 @@
       styles: [],
       disabledLegends: [],
       dataClasses: {},
+      dataOrder: null,
       grid: null,
       gridLines: null,
       showTitle: false,
@@ -164,7 +166,7 @@
         'stacked', 'exportWidth', 'exportHeight', 'areaOpacity', 'xTickCentered', 'barWidth', 'yMaxRound', 'showTitle',
         'title', 'hidePoints', 'pointSize', 'xAxisLabelPos', 'yAxisLabelPos', 'gridLines', 'disableChartInteraction',
         'yTickValueRound', 'disableLegendInteraction', 'numberFormatMinLength', 'tickVisibility', 'chartPadding',
-        'barWidthOverride', 'xPadding', 'yPadding', 'yRounding'],
+        'barWidthOverride', 'xPadding', 'yPadding', 'yRounding', 'dataOrder'],
       // Chart views determine what is displaying chart vs table.
       chartViewName: 'chart',
       tableViewName: 'table',

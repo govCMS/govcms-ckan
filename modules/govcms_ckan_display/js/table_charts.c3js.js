@@ -75,6 +75,7 @@
       // the column order.
       if (self.settings.stacked) {
         data.groups = [self.settings.group];
+        data.order = self.settings.dataOrder;
       }
 
       // Apply styles (currently only works with lines and dashes)

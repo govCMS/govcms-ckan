@@ -10,6 +10,7 @@ $plugin = array(
     'bar_width' => 0.5,
     'rotated' => 'false',
     'stacked' => 0,
+    'data_order' => 'desc',
     'show_labels' => 0,
     'grid' => NULL,
     'grid_lines' => array('lines' => array()),
@@ -77,6 +78,7 @@ function govcms_ckan_display_bar_chart_view($file, $display, $config) {
       'data-barWidthOverride' => govcms_ckan_get_config_value($config, 'bar_width_override', 'auto'),
       'data-rotated' => govcms_ckan_get_config_value($config, 'rotated'),
       'data-stacked' => (govcms_ckan_get_config_value($config, 'stacked') == 1 ? 'true' : 'false'),
+      'data-dataOrder' => govcms_ckan_get_config_value($config, 'data_order', 'desc'),
       'data-labels' => (govcms_ckan_get_config_value($config, 'show_labels') == 1 ? 'true' : 'false'),
       'data-grid' => govcms_ckan_get_config_value($config, 'grid'),
       'data-showTitle' => (govcms_ckan_get_config_value($config, 'show_title') == 1 ? 'true' : 'false'),
@@ -196,6 +198,23 @@ function govcms_ckan_display_bar_chart_configure($plugin, $form, &$form_state, $
     '#title' => t('Is this stacked'),
     '#description' => t('Stacking a bar chart will display the bars on top of each other rather than side by side.'),
     '#default_value' => govcms_ckan_get_config_value($config, 'stacked'),
+  );
+
+  $config_form['data_order'] = array(
+    '#type' => 'select',
+    '#title' => t('Stacked data order'),
+    '#options' => array(
+      'desc' => t('Descending (Default)'),
+      'asc' => t('Ascending'),
+      '' => t('Order by definition in dataset'),
+    ),
+    '#description' => t('How is stacked data ordered.'),
+    '#default_value' => govcms_ckan_get_config_value($config, 'data_order'),
+    '#states' => array(
+      'visible' => array(
+        'input#edit-ckan-visualisation-und-0-config-visualisation-config-stacked' => array('checked' => TRUE),
+      ),
+    ),
   );
 
   return $config_form;
