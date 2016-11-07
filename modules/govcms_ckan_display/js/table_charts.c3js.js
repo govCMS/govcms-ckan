@@ -159,6 +159,10 @@
       // Format Y axis ticks.
       axis.y.tick.format = function (y) {
         var value = self.maxRound(y);
+        // Enforce Y rounding to specific decimal place.
+        if (!!self.settings.yRounding) {
+          value = value.toFixed(self.settings.yRounding);
+        }
         // Apply number formatting to the tick value.
         if (self.settings.yTickValueFormat) {
           return self.formatNumber(value, self.settings.yTickValueFormat);
@@ -347,7 +351,7 @@
      * Eg. '4.000' will output as '4', and '4.123456' will output as '4.1234'.
      */
     self.maxRound = function(number) {
-      var places = Math.pow(10, parseInt(self.settings.yRound));
+      var places = Math.pow(10, parseInt(self.settings.yMaxRound));
       return Math.round(number * places) / places;
     };
 

@@ -35,6 +35,7 @@ $plugin = array(
       'tick_visibility' => 'show',
       'x_padding' => array(),
       'y_padding' => array(),
+      'y_rounding' => NULL,
     ),
     'ckan_filters' => array(
       'search' => NULL,
@@ -87,6 +88,7 @@ function govcms_ckan_display_scatter_plot_chart_view($file, $display, $config) {
       'data-yTickValueFormat' => govcms_ckan_get_config_value($config, 'axis_settings/y_tick_value_format'),
       'data-xTickValueFormat' => govcms_ckan_get_config_value($config, 'axis_settings/x_tick_value_format'),
       'data-xTickCull' => govcms_ckan_get_config_value($config, 'axis_settings/x_tick_cull'),
+      'data-yRounding' => govcms_ckan_get_config_value($config, 'axis_settings/y_rounding'),
       'data-tickVisibility' => govcms_ckan_get_config_value($config, 'axis_settings/tick_visibility', 'show'),
       'data-chartPadding' => govcms_ckan_json_encode_attribute(govcms_ckan_get_config_value($config, 'chart_padding', array())),
       'data-xPadding' => govcms_ckan_json_encode_attribute(govcms_ckan_get_config_value($config, 'axis_settings/x_padding', array())),

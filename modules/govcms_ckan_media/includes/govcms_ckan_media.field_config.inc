@@ -638,6 +638,17 @@ function govcms_ckan_media_visualisation_default_axis_config($form, &$form_state
     ),
   );
 
+  $element['axis_settings']['y_rounding'] = array(
+    '#title' => t('Y Tick Value Rounding'),
+    '#type' => 'select',
+    '#options' => array('' => 'Automatic'),
+    '#default_value' => govcms_ckan_get_config_value($config, 'axis_settings/y_rounding'),
+    '#description' => t('Force to rounding to a specific decimal place. Automatic will only show decimal places if required.'),
+  );
+  for ($i = 1; $i <= 4; $i++) {
+    $element['axis_settings']['y_rounding']['#options'][$i] = t('@i places', array('@i' => $i));
+  }
+
   $y_padding = govcms_ckan_get_config_value($config, 'axis_settings/y_padding', array());
   $element['axis_settings']['y_padding'] = array(
     '#type' => 'fieldset',

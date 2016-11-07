@@ -40,7 +40,8 @@
    * -- data-xTickCull: The max count of labels on the X axis
    * -- data-xTickCentered: Are the x ticks centered above labels.
    * -- data-tickVisibility: Determines tick visibility. Options: show, hide-x, hide-y, hide-xy.
-   * -- data-yRound: The maximum amount of decimal places to allow in the Y axis ticks
+   * -- data-yMaxRound: The maximum amount of decimal places to allow in the Y axis ticks in auto mode.
+   * -- data-yRounding: Enforce a number of of decimal places in the Y axis.
    * -- data-disableChartInteraction: Disable hover values on the chart. Default false.
    * -- data-disableLegendInteraction: Prevent hover/click defaults on legend. Default false
    * -- data-barWidth: Set the ratio for bar widths. If set to manual it will use barWidthOverride value.
@@ -142,10 +143,13 @@
       exportHeight: '',
       exportStylesheets: [],
       chartPadding: {},
+      xPadding: {},
+      yPadding: {},
       disableChartInteraction: false,
       disableLegendInteraction: false,
       areaOpacity: 20,
-      yRound: 4,
+      yMaxRound: 4,
+      yRounding: null,
       barWidth: 0.5,
       barWidthOverride: 'auto',
       // The data for the chart.
@@ -157,10 +161,10 @@
       // Data attributes automatically parsed from the table element.
       dataAttributes: ['type', 'rotated', 'labels', 'defaultView', 'grid', 'xLabel', 'yLabel', 'xTickRotate',
         'xTickCount', 'yTickCount', 'yTickValues', 'xTickValues', 'yTickValueFormat', 'xTickValueFormat', 'xTickCull',
-        'stacked', 'exportWidth', 'exportHeight', 'areaOpacity', 'xTickCentered', 'barWidth', 'yRound', 'showTitle',
+        'stacked', 'exportWidth', 'exportHeight', 'areaOpacity', 'xTickCentered', 'barWidth', 'yMaxRound', 'showTitle',
         'title', 'hidePoints', 'pointSize', 'xAxisLabelPos', 'yAxisLabelPos', 'gridLines', 'disableChartInteraction',
         'yTickValueRound', 'disableLegendInteraction', 'numberFormatMinLength', 'tickVisibility', 'chartPadding',
-        'barWidthOverride', 'xPadding', 'yPadding'],
+        'barWidthOverride', 'xPadding', 'yPadding', 'yRounding'],
       // Chart views determine what is displaying chart vs table.
       chartViewName: 'chart',
       tableViewName: 'table',
