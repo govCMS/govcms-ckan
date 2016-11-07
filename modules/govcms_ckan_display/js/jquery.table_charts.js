@@ -45,7 +45,9 @@
    * -- data-disableLegendInteraction: Prevent hover/click defaults on legend. Default false
    * -- data-barWidth: Set the ratio for bar widths. If set to manual it will use barWidthOverride value.
    * -- data-barWidthOverride: Set the bar width (without a ratio), Requires barWidth to be 'manual'
-   * -- data-chartPadding: Additional padding on edges of the chart. Expects object with top, right, bottom, left.
+   * -- data-chartPadding: Additional padding on edges of the chart. Expects object with: top, right, bottom, left.
+   * -- data-xPadding: Additional padding on edges of the axis. Expects object with: right, left.
+   * -- data-yPadding: Additional padding on edges of the chart. Expects object with: top, bottom.
    * -- data-exportWidth: The width of the exported png. @see chartExport()
    * -- data-exportHeight: The height of the exported png. @see chartExport()
    * - Table headings (th) is used as the label and the following attributes can be used
@@ -158,7 +160,7 @@
         'stacked', 'exportWidth', 'exportHeight', 'areaOpacity', 'xTickCentered', 'barWidth', 'yRound', 'showTitle',
         'title', 'hidePoints', 'pointSize', 'xAxisLabelPos', 'yAxisLabelPos', 'gridLines', 'disableChartInteraction',
         'yTickValueRound', 'disableLegendInteraction', 'numberFormatMinLength', 'tickVisibility', 'chartPadding',
-        'barWidthOverride'],
+        'barWidthOverride', 'xPadding', 'yPadding'],
       // Chart views determine what is displaying chart vs table.
       chartViewName: 'chart',
       tableViewName: 'table',

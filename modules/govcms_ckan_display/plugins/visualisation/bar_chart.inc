@@ -34,6 +34,8 @@ $plugin = array(
       'x_tick_value_format' => NULL,
       'x_tick_cull' => NULL,
       'tick_visibility' => 'show',
+      'x_padding' => array(),
+      'y_padding' => array(),
     ),
     'ckan_filters' => array(
       'search' => NULL,
@@ -90,6 +92,8 @@ function govcms_ckan_display_bar_chart_view($file, $display, $config) {
       'data-xTickCull' => govcms_ckan_get_config_value($config, 'axis_settings/x_tick_cull'),
       'data-tickVisibility' => govcms_ckan_get_config_value($config, 'axis_settings/tick_visibility', 'show'),
       'data-chartPadding' => govcms_ckan_json_encode_attribute(govcms_ckan_get_config_value($config, 'chart_padding', array())),
+      'data-xPadding' => govcms_ckan_json_encode_attribute(govcms_ckan_get_config_value($config, 'axis_settings/x_padding', array())),
+      'data-yPadding' => govcms_ckan_json_encode_attribute(govcms_ckan_get_config_value($config, 'axis_settings/y_padding', array())),
       'data-gridLines' => govcms_ckan_json_encode_attribute(govcms_ckan_array_valid_rows($grid_lines, 'value')),
       'data-disableChartInteraction' => (govcms_ckan_get_config_value($config, 'disable_chart_interaction') == 1 ? 'true' : 'false'),
       'data-disableLegendInteraction' => (govcms_ckan_get_config_value($config, 'disable_legend_interaction') == 1 ? 'true' : 'false'),

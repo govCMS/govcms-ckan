@@ -587,6 +587,28 @@ function govcms_ckan_media_visualisation_default_axis_config($form, &$form_state
     ),
   );
 
+  $x_padding = govcms_ckan_get_config_value($config, 'axis_settings/x_padding', array());
+  $element['axis_settings']['x_padding'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('X Axis padding'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#attributes' => array('class' => array('container-inline')),
+    '#description' => '<p>' . t('Optionally define the padding at each end of the X axis. If left empty this will be automatically calculated.') . '</p>',
+    'left' => array(
+      '#type' => 'textfield',
+      '#title' => t('Left'),
+      '#size' => 10,
+      '#default_value' => govcms_ckan_get_config_value($x_padding, 'left'),
+    ),
+    'right' => array(
+      '#type' => 'textfield',
+      '#title' => t('Right'),
+      '#size' => 10,
+      '#default_value' => govcms_ckan_get_config_value($x_padding, 'right'),
+    ),
+  );
+
   $element['axis_settings']['y_axis_title'] = govcms_ckan_media_form_title_element(t('Y Axis'));
 
   $element['axis_settings']['y_tick_count'] = array(
@@ -613,6 +635,28 @@ function govcms_ckan_media_visualisation_default_axis_config($form, &$form_state
       '' => t('None'),
       ' ' => t('Space separated Eg. 10 000'),
       ',' => t('Comma separated Eg. 10,000'),
+    ),
+  );
+
+  $y_padding = govcms_ckan_get_config_value($config, 'axis_settings/y_padding', array());
+  $element['axis_settings']['y_padding'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Y Axis padding'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#attributes' => array('class' => array('container-inline')),
+    '#description' => '<p>' . t('Optionally define the padding at each end of the X axis. If left empty this will be automatically calculated.') . '</p>',
+    'top' => array(
+      '#type' => 'textfield',
+      '#title' => t('Top'),
+      '#size' => 10,
+      '#default_value' => govcms_ckan_get_config_value($y_padding, 'top'),
+    ),
+    'bottom' => array(
+      '#type' => 'textfield',
+      '#title' => t('Bottom'),
+      '#size' => 10,
+      '#default_value' => govcms_ckan_get_config_value($y_padding, 'bottom'),
     ),
   );
 

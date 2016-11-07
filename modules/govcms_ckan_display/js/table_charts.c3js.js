@@ -193,6 +193,14 @@
         axis.y.label.position = (!self.settings.rotated ? self.settings.yAxisLabelPos : self.settings.xAxisLabelPos);
       }
 
+      // X and Y axis padding.
+      if (typeof self.settings.xPadding === "object") {
+        axis.x.padding = self.settings.xPadding;
+      }
+      if (typeof self.settings.yPadding === "object") {
+        axis.y.padding = self.settings.yPadding;
+      }
+
       // Add to options.
       self.options.axis = axis;
 
