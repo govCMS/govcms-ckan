@@ -134,6 +134,8 @@
       xTickValues: null,
       yTickValueFormat: null,
       xTickValueFormat: null,
+      xTickType: null,
+      xDateFormat: {},
       numberFormatMinLength: 5,
       xTickCull: false,
       xTickCentered: true,
@@ -166,7 +168,7 @@
         'stacked', 'exportWidth', 'exportHeight', 'areaOpacity', 'xTickCentered', 'barWidth', 'yMaxRound', 'showTitle',
         'title', 'hidePoints', 'pointSize', 'xAxisLabelPos', 'yAxisLabelPos', 'gridLines', 'disableChartInteraction',
         'yTickValueRound', 'disableLegendInteraction', 'numberFormatMinLength', 'tickVisibility', 'chartPadding',
-        'barWidthOverride', 'xPadding', 'yPadding', 'yRounding', 'dataOrder'],
+        'barWidthOverride', 'xPadding', 'yPadding', 'yRounding', 'dataOrder', 'xTickType', 'xDateFormat'],
       // Chart views determine what is displaying chart vs table.
       chartViewName: 'chart',
       tableViewName: 'table',

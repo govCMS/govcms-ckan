@@ -107,6 +107,11 @@
       // Add optional classes.
       data.classes = self.settings.dataClasses;
 
+      // Add date input formatting if available and timeseries.
+      if (self.settings.xTickType === 'timeseries' && self.settings.xDateFormat.input) {
+        data.xFormat = self.settings.xDateFormat.input;
+      }
+
       // Add to options.
       self.options.data = data;
 
@@ -157,6 +162,11 @@
         };
       }
 
+      // Add date output formatting if available and timeseries.
+      if (self.settings.xTickType === 'timeseries' && self.settings.xDateFormat.output) {
+        axis.x.tick.format = self.settings.xDateFormat.output;
+      }
+
       // Format Y axis ticks.
       axis.y.tick.format = function (y) {
         var value = self.maxRound(y);
@@ -183,6 +193,11 @@
       // Tick culling prevents this being a category axis.
       if (self.settings.xLabels.length > 1 && self.settings.xTickCull === false && !self.settings.xTickValues) {
         axis.x.type = 'category';
+      }
+
+      // Force the X axis to a specific type. This trumps auto setting above.
+      if (self.settings.xTickType) {
+        axis.x.type = self.settings.xTickType;
       }
 
       // X Axis tick centered.
