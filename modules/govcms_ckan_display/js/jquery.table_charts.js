@@ -375,6 +375,7 @@
       // Add chart placeholder to dom with a unique Id.
       self.$chart.attr('id', self.settings.chartDomId)
         .addClass(self.settings.component + '--chart')
+        .addClass(self.settings.component + '--chart--' + self.settings.type)
         .insertAfter(self.$tableWrapper);
 
       // Display only table or chart depending on defaultView.

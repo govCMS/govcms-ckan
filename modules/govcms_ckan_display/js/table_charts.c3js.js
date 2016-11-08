@@ -372,6 +372,13 @@
     };
 
     /*
+     * Replicates functionality of jQuery.addClass() which doesn't work on svgs.
+     */
+    self.addClass = function($el, className) {
+      $el.attr('class', $el.attr('class') + ' ' + className);
+    };
+
+    /*
      * Perform post chart creation tasks.
      */
     self.postBuildCallback = function () {
@@ -382,6 +389,13 @@
       ];
       // $.addClass does't work here so classes are added as an attribute.
       $('#' + self.settings.chartDomId + ' > svg').attr('class', classes.join(' '));
+      // Add styles to legend.
+      if (self.settings.styles.length) {
+        $(self.settings.styles).each(function (i, d){
+          var $legendItem = $('#' + self.settings.chartDomId + ' .c3-legend-item-' + d.set.replace(' ', '-'));
+          self.addClass($legendItem, 'c3-style-' + d.style);
+        });
+      }
       // Execute any callbacks passed from tableCharts.
       self.settings.chartInitCallback();
     };
