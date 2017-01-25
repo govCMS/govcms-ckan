@@ -422,9 +422,10 @@ function govcms_ckan_media_visualisation_include_form_widgets($form, &$form_stat
 function govcms_ckan_media_visualisation_default_key_config($form, &$form_state, $config = array(), $key_type = 'numeric') {
   $form = array();
 
-  // Make a request to obtain the fields.
+  // Make a request to obtain the fields. We disable cache for this request so
+  // to flush the cache for this resource and respect new cache_ttl values.
   $resource_id = _govcms_ckan_media_get_resource_id_from_widget_form($form_state);
-  $result = govcms_ckan_client_request_records($resource_id);
+  $result = govcms_ckan_client_request_records($resource_id, NULL, NULL, 0);
 
   // If something went wrong with request we cannot continue.
   if ($result->valid === FALSE || !isset($result->data->fields)) {
@@ -543,6 +544,25 @@ function govcms_ckan_media_visualisation_default_key_config($form, &$form_state,
     '#empty_option' => t('None'),
     '#description' => t('Optionally spit into multiple visualisations based on the value of this key. Eg. a column of the data might contain the year, with this you could split the visualisations into one per year. !help.',
       array('!help' => govcms_ckan_help_link('govcms_ckan_media', 'split'))),
+  );
+
+  // Allow overriding the default cache duration.
+  $form['cache_ttl'] = array(
+    '#type' => 'select',
+    '#title' => t('Cache expiry'),
+    '#description' => t('How long will the results for this dataset be cached for.'),
+    '#default_value' => govcms_ckan_get_config_value($config, 'cache_ttl', 'global'),
+    '#options' => array(
+      'global' => t('Global default'),
+      0 => t('No cache'),
+      1800 => t('30 minutes'),
+      3600 => t('1 hour'),
+      21600 => t('6 hours'),
+      86400 => t('1 day'),
+      604800 => t('1 week'),
+      2592000 => t('1 month'),
+      15552000 => t('6 months'),
+    ),
   );
 
   $column_override_examples = array(

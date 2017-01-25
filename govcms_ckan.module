@@ -24,6 +24,12 @@ define('GOVCMS_CKAN_HELP_PATH', 'govcms-ckan/help');
 define('GOVCMS_CKAN_DATASET_RECORD_LIMIT', 10000);
 
 /**
+ * Default cache expiries, may be overriden via settings.
+ */
+define('GOVCMS_CKAN_CACHE_TTL', 2592000);
+define('GOVCMS_CKAN_CACHE_FAIL_TTL', 86400);
+
+/**
  * Implements hook_ctools_plugin_directory().
  */
 function govcms_ckan_ctools_plugin_directory($module, $plugin) {
@@ -218,7 +224,10 @@ function govcms_ckan_client() {
   $base_url = variable_get('govcms_ckan_endpoint_url', '');
   $api_key = variable_get('govcms_ckan_api_key', '');
   $auth_header = variable_get('govcms_ckan_auth_header', 'Authorization');
-  return new GovCmsCkanClient($base_url, $api_key, $auth_header);
+  $client = new GovCmsCkanClient($base_url, $api_key, $auth_header);
+  $client->setCacheTTL(variable_get('govcms_ckan_cache_ttl', GOVCMS_CKAN_CACHE_TTL), 'success');
+  $client->setCacheTTL(variable_get('govcms_ckan_cache_fail_ttl', GOVCMS_CKAN_CACHE_FAIL_TTL), 'fail');
+  return $client;
 }
 
 /**
@@ -226,11 +235,17 @@ function govcms_ckan_client() {
  *
  * @param string $resource_id
  *   The resource_id to request.
+ * @param string $search
+ *   Optional search string.
+ * @param string $filters
+ *   Optional filters.
+ * @param string|int $cache_ttl
+ *   Override the cache expiry, set to 'global' to use defaults.
  *
  * @return object
  *   A client response object.
  */
-function govcms_ckan_client_request_records($resource_id = NULL, $search = NULL, $filters = NULL) {
+function govcms_ckan_client_request_records($resource_id = NULL, $search = NULL, $filters = NULL, $cache_ttl = 'global') {
   $client = govcms_ckan_client();
   $limit = variable_get('govcms_ckan_dataset_record_limit', GOVCMS_CKAN_DATASET_RECORD_LIMIT);
   $query = array('id' => $resource_id, 'limit' => $limit);
@@ -241,6 +256,10 @@ function govcms_ckan_client_request_records($resource_id = NULL, $search = NULL,
 
   if (!empty($filters)) {
     $query += array('filters' => $filters);
+  }
+
+  if ($cache_ttl !== 'global') {
+    $client->setCacheTTL($cache_ttl);
   }
 
   return $client->get('action/datastore_search', $query);

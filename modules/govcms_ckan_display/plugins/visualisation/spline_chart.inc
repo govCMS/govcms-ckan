@@ -56,7 +56,8 @@ function govcms_ckan_display_spline_chart_view($file, $display, $config) {
   $chart_class = 'ckan-spline-chart';
   $ckan_search = govcms_ckan_get_config_value($config, 'ckan_filters/search');
   $ckan_filters = govcms_ckan_get_config_value($config, 'ckan_filters/filters');
-  $response = govcms_ckan_client_request_records($file->resource_id, $ckan_search, $ckan_filters);
+  $ckan_cache_ttl = govcms_ckan_get_config_value($config, 'cache_ttl', 'global');
+  $response = govcms_ckan_client_request_records($file->resource_id, $ckan_search, $ckan_filters, $ckan_cache_ttl);
 
   // If failure, provide error message.
   if ($response->valid === FALSE) {

@@ -31,7 +31,7 @@ class GovCmsCkanClient {
    */
   private $apiUrl;
   private $apiKey;
-  private $authHeader;
+  private $authHeader = 'Authorization';
   private $apiPath = '/api/%d/';
   private $apiVersion = 3;
 
@@ -61,6 +61,11 @@ class GovCmsCkanClient {
   private $cacheTable = 'cache';
 
   /**
+   * Cache prefix.
+   */
+  private $cachePrefix = 'govcmsckan';
+
+  /**
    * How long to cache for if request was successful (in seconds).
    */
   private $cacheExpirySuccess = 2592000;
@@ -83,8 +88,10 @@ class GovCmsCkanClient {
   public function __construct($base_url, $api_key = NULL, $auth_header = "Authorization", $api_version = 3) {
     $this->apiUrl = $base_url;
     $this->apiKey = $api_key;
-    $this->authHeader = $auth_header;
     $this->apiVersion = $api_version;
+    if (!empty($auth_header)) {
+      $this->authHeader = $auth_header;
+    }
   }
 
   /**
@@ -154,7 +161,7 @@ class GovCmsCkanClient {
 
     // If no cache, we do a new request, parse and cache it.
     // If cache was present, the responseObject will be updated.
-    if ($this->cacheDataGet() === FALSE) {
+    if ($this->cacheExpirySuccess === 0 || $this->cacheDataGet() === FALSE) {
       // Make the request.
       $this->response = drupal_http_request($this->url, array(
         'headers' => array($this->authHeader => $this->apiKey),
@@ -232,13 +239,41 @@ class GovCmsCkanClient {
   }
 
   /**
+   * Set the cache TTL expiry.
+   *
+   * @param int $seconds
+   *   The number of seconds to cache for.
+   * @param string $type
+   *   Can be 'success' if the last request was successful or 'fail' if the last
+   *   request was a failure.
+   */
+  public function setCacheTTL($seconds, $type = 'success') {
+    if ($type == 'success') {
+      $this->cacheExpirySuccess = (int) $seconds;
+    }
+    if ($type == 'fail') {
+      $this->cacheExpiryFail = (int) $seconds;
+    }
+  }
+
+  /**
+   * Retrieve a cache key for the current url.
+   *
+   * @return string
+   *   The cache key used in Drupal cache table.
+   */
+  private function getCacheKey() {
+    return $this->cachePrefix . ':' . $this->url;
+  }
+
+  /**
    * Populate the responseObject with the cached version if exists.
    *
    * @return bool
    *   TRUE if successful cache get, FALSE if not.
    */
   private function cacheDataGet() {
-    $cache = cache_get($this->url);
+    $cache = cache_get($this->getCacheKey());
     if (!empty($cache->data) && $cache->expire > time()) {
       $this->responseObject = $cache->data;
       return TRUE;
@@ -253,7 +288,7 @@ class GovCmsCkanClient {
    */
   private function cacheDataSet() {
     $expiry = $this->responseObject->valid ? $this->cacheExpirySuccess : $this->cacheExpiryFail;
-    cache_set($this->url, $this->responseObject, $this->cacheTable, time() + $expiry);
+    cache_set($this->getCacheKey(), $this->responseObject, $this->cacheTable, time() + $expiry);
   }
 
 }
