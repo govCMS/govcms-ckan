@@ -731,7 +731,7 @@ function govcms_ckan_media_visualisation_default_axis_config($form, &$form_state
 
   $element['axis_settings']['x_type'] = array(
     '#type' => 'select',
-    '#title' => t('Axis label type'),
+    '#title' => t('X Axis label type'),
     '#description' => t('Force interpretation of X labels as a specific type. Useful for dates (time series)'),
     '#options' => array(
       '' => t('Automatic (Indexed if numeric, category if not)'),
@@ -740,6 +740,20 @@ function govcms_ckan_media_visualisation_default_axis_config($form, &$form_state
       'timeseries' => t('Date or time'),
     ),
     '#default_value' => govcms_ckan_get_config_value($config, 'axis_settings/x_type'),
+  );
+
+  $element['axis_settings']['x_disable_multiline'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Disable X label wrapping'),
+    '#description' => t('Check to disable automatically wrapping of X labels. This is useful if labels are overlapping each other, works well with "X label width" and "Chart padding".'),
+    '#default_value' => govcms_ckan_get_config_value($config, 'axis_settings/x_disable_multiline', FALSE),
+  );
+
+  $element['axis_settings']['x_width'] = array(
+    '#type' => 'textfield',
+    '#title' => t('X label width'),
+    '#description' => t('Specify the width of a X label. NOTE: the label will always be restricted by the "Chart Padding" so ensure that exceeds the label width.'),
+    '#default_value' => govcms_ckan_get_config_value($config, 'axis_settings/x_width'),
   );
 
   $timeseries_legend = '%d = day, %m = month, %Y = year, %H = hour, %M = min, %S = second';
@@ -1084,6 +1098,25 @@ function govcms_ckan_media_visualisation_default_chart_config($form, &$form_stat
       '#title' => ucwords($edge),
       '#type' => 'textfield',
       '#default_value' => govcms_ckan_get_config_value($config, 'chart_padding/' . $edge),
+    );
+  }
+
+  // Chart dimensions.
+  $element['chart_size'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Chart dimensions'),
+    '#description' => '<p>' . t('Override the default dimensions of the chart. NOTE: Setting a width is not advised if your website is responsive. Dimensions are in pixels.') . '</p>',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#tree' => TRUE,
+  );
+
+  $dimensions = array('height', 'width');
+  foreach ($dimensions as $size) {
+    $element['chart_size'][$size] = array(
+      '#title' => ucwords($size),
+      '#type' => 'textfield',
+      '#default_value' => govcms_ckan_get_config_value($config, 'chart_size/' . $size),
     );
   }
 

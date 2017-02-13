@@ -37,6 +37,8 @@
    * -- data-xTickValues: Override the tick values on the X axis (comma separated values)
    * -- data-yTickValueFormat: Format Y axis values in a number format.
    * -- data-xTickValueFormat: Format X axis values in a number format.
+   * -- data-xDisableMultiLine: Disable wrapping of labels on the X axis.
+   * -- data-xWidth: Specify a width for labels on the X axis.
    * -- data-numberFormatMinLength: Formatting of tick values only applies on numbers with a length gte to this.
    * -- data-xTickCull: The max count of labels on the X axis
    * -- data-xTickCentered: Are the x ticks centered above labels.
@@ -48,6 +50,7 @@
    * -- data-barWidth: Set the ratio for bar widths. If set to manual it will use barWidthOverride value.
    * -- data-barWidthOverride: Set the bar width (without a ratio), Requires barWidth to be 'manual'
    * -- data-chartPadding: Additional padding on edges of the chart. Expects object with: top, right, bottom, left.
+   * -- data-chartSize: Override default chart width and height. Expects object with: width, height.
    * -- data-xPadding: Additional padding on edges of the axis. Expects object with: right, left.
    * -- data-yPadding: Additional padding on edges of the chart. Expects object with: top, bottom.
    * -- data-exportWidth: The width of the exported png. @see chartExport()
@@ -136,6 +139,8 @@
       xTickValueFormat: null,
       xTickType: null,
       xDateFormat: {},
+      xDisableMultiLine: false,
+      xWidth: null,
       numberFormatMinLength: 5,
       xTickCull: false,
       xTickCentered: true,
@@ -147,6 +152,7 @@
       exportHeight: '',
       exportStylesheets: [],
       chartPadding: {},
+      chartSize: {},
       xPadding: {},
       yPadding: {},
       disableChartInteraction: false,
@@ -168,7 +174,8 @@
         'stacked', 'exportWidth', 'exportHeight', 'areaOpacity', 'xTickCentered', 'barWidth', 'yMaxRound', 'showTitle',
         'title', 'hidePoints', 'pointSize', 'xAxisLabelPos', 'yAxisLabelPos', 'gridLines', 'disableChartInteraction',
         'yTickValueRound', 'disableLegendInteraction', 'numberFormatMinLength', 'tickVisibility', 'chartPadding',
-        'barWidthOverride', 'xPadding', 'yPadding', 'yRounding', 'dataOrder', 'xTickType', 'xDateFormat'],
+        'barWidthOverride', 'xPadding', 'yPadding', 'yRounding', 'dataOrder', 'xTickType', 'xDateFormat',
+        'xDisableMultiLine', 'xWidth', 'chartSize'],
       // Chart views determine what is displaying chart vs table.
       chartViewName: 'chart',
       tableViewName: 'table',
