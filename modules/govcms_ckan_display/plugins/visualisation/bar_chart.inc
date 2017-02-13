@@ -7,6 +7,9 @@
 $plugin = array(
   'title' => t('Bar chart'),
   'settings' => array(
+    'keys' => array(),
+    'labels' => NULL,
+    'split' => NULL,
     'bar_width' => 0.5,
     'rotated' => 'false',
     'stacked' => 0,

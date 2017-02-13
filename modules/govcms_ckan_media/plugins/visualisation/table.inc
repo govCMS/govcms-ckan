@@ -12,6 +12,9 @@ $plugin = array(
     'column_overrides' => array(),
   ),
   'settings' => array(
+    'keys' => array(),
+    'labels' => NULL,
+    'split' => NULL,
     'ckan_filters' => array(
       'search' => NULL,
       'filters' => NULL,

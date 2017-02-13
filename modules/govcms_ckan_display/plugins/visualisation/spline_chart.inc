@@ -7,6 +7,9 @@
 $plugin = array(
   'title' => t('Spline chart'),
   'settings' => array(
+    'keys' => array(),
+    'labels' => NULL,
+    'split' => NULL,
     'rotated' => 'false',
     'area' => 0,
     'show_labels' => 0,

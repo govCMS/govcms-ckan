@@ -7,6 +7,9 @@
 $plugin = array(
   'title' => t('Scatter Plot chart'),
   'settings' => array(
+    'keys' => array(),
+    'labels' => NULL,
+    'split' => NULL,
     'rotated' => 'false',
     'show_labels' => 0,
     'point_size' => 2.5,

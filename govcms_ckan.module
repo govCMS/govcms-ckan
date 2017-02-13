@@ -178,6 +178,7 @@ function govcms_ckan_get_plugin($name) {
 function govcms_ckan_get_plugin_config_form($name, $form, &$form_state, $config) {
   $plugin = govcms_ckan_get_plugin($name);
   // Merge custom settings with defaults.
+  $config = !empty($config) && is_array($config) ? $config : array();
   $config = array_merge($plugin['settings'], $config);
   $config_form = array();
   $function = $plugin['configure'];
@@ -205,6 +206,7 @@ function govcms_ckan_get_plugin_config_form($name, $form, &$form_state, $config)
 function govcms_ckan_get_plugin_view($name, $file, $display, $config) {
   $plugin = govcms_ckan_get_plugin($name);
   // Merge custom settings with defaults.
+  $config = !empty($config) && is_array($config) ? $config : array();
   $config = array_merge($plugin['settings'], $config);
   // Merge display settings but file config takes precedence.
   $config = array_merge($display['settings'], $config);
