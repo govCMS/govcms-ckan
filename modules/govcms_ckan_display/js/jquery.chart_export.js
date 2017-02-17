@@ -58,7 +58,9 @@
       errorMsg: 'Sorry, your browser does not support this function.',
       // Manual download message.
       manualDownloadMessage: 'Your browser requires manual saving of this file, when redirected to the image, ' +
-        'right click and "Save {saveType} As..." to save it to your computer with the filename "{filename}"'
+        'right click and "Save {saveType} As..." to save it to your computer with the filename "{filename}"',
+      ieDownloadMessage: 'Right click the graph and select "Save picture as" then in the save dialog, set the ' +
+        '"Save as type" to '
     };
 
     // Update defaults with passed settings.
@@ -278,7 +280,15 @@
         alert(self.settings.manualDownloadMessage.replace('{filename}', self.getFilename()).replace('{saveType}', saveType));
       }
 
-      // Get the html for the svg.
+      // IE doesn't have very good blob support causing save to fail, so show a
+      // message instead. IE also has issues with duplicating xmlns and outerHTML.
+      // Works fine in EDGE.
+      if (self.isIE()) {
+        alert(self.settings.ieDownloadMessage + '"' + self.settings.format.toUpperCase() + '"');
+        return;
+      }
+
+      // Get the html for the svg (emulates cross browser outerHtml).
       self.svgHtml = self.settings.svg[0].outerHTML;
 
       // Call the save method based on format.
@@ -297,6 +307,15 @@
      */
     self.isSafari = function () {
       return navigator.vendor && navigator.vendor.indexOf('Apple') > -1 && navigator.userAgent && !navigator.userAgent.match('CriOS');
+    };
+
+    /*
+     * Internet Explorer check due to issue with blobs (and other things).
+     */
+    self.isIE = function () {
+      var ua = window.navigator.userAgent;
+      var msie = ua.indexOf("MSIE ");
+      return (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./));
     };
 
     /*
