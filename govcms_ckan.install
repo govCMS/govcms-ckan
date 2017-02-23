@@ -12,3 +12,43 @@ function govcms_ckan_uninstall() {
   variable_del('govcms_ckan_endpoint_url');
   variable_del('govcms_ckan_api_key');
 }
+
+/**
+ * Implements hook_update_n().
+ *
+ * Reorder text format filters so that URL rewriting happens after media.
+ */
+function govcms_ckan_update_7102() {
+  if (!module_exists('filter')) {
+    return t('Filter module not enabled, update not required');
+  }
+
+  foreach (filter_formats() as $format) {
+    if (empty($format->format)) {
+      continue;
+    }
+
+    $format_filters = filter_list_format($format->format);
+
+    if (empty($format_filters['filter_url']) || empty($format_filters['media_filter'])) {
+      // If we don't have either filter, we should just skip this format.
+      continue;
+    }
+
+    if ($format_filters['filter_url']->status == 0) {
+      // If filter_url is not enabled for this format we can skip.
+      continue;
+    }
+
+    if ($format_filters['filter_url']->weight < $format_filters['media_filter']->weight) {
+      // Higher goes first.
+      $format_filters['filter_url']->weight = $format_filters['media_filter']->weight + 1;
+    }
+
+    // Add the filters to the format- they need to be an array.
+    $format->filters = json_decode(json_encode($format_filters), TRUE);
+
+    // Trigger a save for this format..
+    filter_format_save($format);
+  }
+}
