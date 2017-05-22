@@ -1,0 +1,15 @@
+name = CKAN Wizard
+description = Views integration for CKAN datasets
+package = govCMS
+core = 7.x
+
+; Ctools plugin classes.
+files[] = plugins/views_wizard/ckan_dataset_views_wizard.class.php
+
+; Views automatically includes if files are in views subdir.
+files[] = views/views_handler_field_ckan_entity.inc
+files[] = views/views_plugin_style_ckan_visualisation.inc
+files[] = views/views_plugin_query_ckan_datastore.inc
+
+; Views handlers to expose some of the CKAN fields for the resources.
+files[] = views/views_handler_filter_ckan.inc
