@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * Implements hook_ctools_plugin_directory().
+ */
+function govcms_ckan_views_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'views_ui') {
+    return 'plugins/views_wizard';
+  }
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function govcms_ckan_views_views_api() {
+  return [
+    'api' => 3,
+    'path' => drupal_get_path('module', 'govcms_ckan_views'),
+  ];
+}
