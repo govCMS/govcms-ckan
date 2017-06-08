@@ -4,6 +4,8 @@
  * Handles CKAN Dataset Parsing.
  */
 
+require_once __DIR__ . '/GovCmsCkanRecord.inc';
+
 /**
  * Defines the GovCmsCkanDatasetParser class.
  */
@@ -284,7 +286,7 @@ class GovCmsCkanDatasetParser {
     $labels = array();
     if (!empty($this->records) && is_array($this->records) && !empty($key)) {
       foreach ($this->records as $record) {
-        if (isset($record->{$key})) {
+        if ($record->{$key}) {
           $labels[$record->{$key}] = $record->{$key};
         }
       }
@@ -463,6 +465,7 @@ class GovCmsCkanDatasetParser {
    */
   private function parseCallbackNone($records) {
     $table = array();
+    $records = $this->buildRecords($records);
 
     // Table header is simply the keys.
     $table['header'] = $this->keys;
@@ -484,6 +487,7 @@ class GovCmsCkanDatasetParser {
    */
   private function parseCallbackKeys($records) {
     $table = array();
+    $records = $this->buildRecords($records);
 
     // We need to add the label field back to the keys for this formatter.
     $keys = $this->keys;
@@ -523,6 +527,7 @@ class GovCmsCkanDatasetParser {
    */
   private function parseCallbackValues($records) {
     $table = array();
+    $records = $this->buildRecords($records);
 
     // TODO: Should use an x axis label for this value.
     $table['header'] = array($this->createHeaderCell('col'));
@@ -554,6 +559,22 @@ class GovCmsCkanDatasetParser {
     }
 
     return $table;
+  }
+
+  /**
+   * Build record objects from a given dataset.
+   *
+   * @param array $records
+   *   The resultant dataset.
+   *
+   * @return array
+   *   An array of GovCmsCkanRecords.
+   */
+  public function buildRecords(array $records = array()) {
+    foreach ($records as &$record) {
+      $record = get_class($record) === 'GovCmsCkanRecord' ? $record : new GovCmsCkanRecord($record);
+    }
+    return $records;
   }
 
 }
