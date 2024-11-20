@@ -1,4 +1,4 @@
-INTRODUCTION
+INTRODUCTION - ARCHIVED
 ============
 
 govCMS CKAN provides integration with CKAN (http://ckan.org/). CKAN is a
